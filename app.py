@@ -7,14 +7,15 @@ import requests
 from mongoDBOperations import MongoDBManagement
 from FlipkratScrapping import FlipkratScrapper
 from selenium import webdriver
+from webdriver_manager.chrome import ChromeDriverManager
 from RepositoryForObject import ObjectRepository
 import pymongo
 import json
 
 app = Flask(__name__)  # initialising the flask app with the name 'app'
 
-GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
-CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
+# GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
+# CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
 
 # chrome_option = webdriver.ChromeOptions()
 #
@@ -27,12 +28,12 @@ CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
 chrome_options = webdriver.ChromeOptions()
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--no-sandbox')
-chrome_options.binary_location = GOOGLE_CHROME_PATH
+chrome_options.add_argument("disable-dev-shm-usage")
 
 
 def review(searchString, expected_review):
     try:
-        scrapper_object = FlipkratScrapper(executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
+        scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(), chrome_options=chrome_options)
         mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
         url = "https://www.flipkart.com/"
         db_name = 'Flipkart-Scrapper'

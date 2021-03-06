@@ -18,3 +18,5 @@ urllib3 ~= 1.21.1
 Werkzeug==1.0.1
 win-inet-pton
 wincertstore==0.2
+webdriver-manager~=3.3.0
+
