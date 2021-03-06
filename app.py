@@ -43,6 +43,7 @@ def review(searchString, expected_review):
 
         scrapper_object.getLinkForExpectedReviewCount(searchString=searchString,
                                                       expected_review=expected_review)
+
         product_name = scrapper_object.getProductName()
         product_searched = scrapper_object.getProductSearched(search_string=searchString)
         price = scrapper_object.getPrice()

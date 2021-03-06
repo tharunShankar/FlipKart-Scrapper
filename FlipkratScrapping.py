@@ -230,19 +230,14 @@ class FlipkratScrapper:
         """
         try:
             filter_Products = self.filterProductLink(search_string=searchString)
-            # link_dict = self.getUrlDict(filtered_list=filter_Products)
             actual_product_link = []
             for link in filter_Products:
-                print(link)
-                # if 'categorytree' in link:
-                #     continue
-                # else:
-                #     print('found')
                 if '?pid=' in link:
-                    print('?pid found')
+                    self.openUrl(url = link)
                     actual_product_link.append(link)
                 else:
-                        continue
+                    self.driver.close()
+                    continue
             return actual_product_link
         except Exception as e:
             # self.driver.refresh()
@@ -261,6 +256,7 @@ class FlipkratScrapper:
                 self.openUrl(url=url_to_hit)
                 total_review_page = self.getTotalReviewPage()
                 count = total_review_page
+                self.driver.close()
             self.openUrl(url=url_to_hit)
             return True
         except Exception as e:
