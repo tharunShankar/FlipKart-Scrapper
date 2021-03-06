@@ -13,18 +13,26 @@ import json
 
 app = Flask(__name__)  # initialising the flask app with the name 'app'
 
-chrome_option = webdriver.ChromeOptions()
+GOOGLE_CHROME_PATH = '/app/.apt/usr/bin/google_chrome'
+CHROMEDRIVER_PATH = '/app/.chromedriver/bin/chromedriver'
 
-chrome_option.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
-chrome_option.add_argument("--headless")
-chrome_option.add_argument("--no-sandbox")
-chrome_option.add_argument("--disable-dev-sh-usage")
+# chrome_option = webdriver.ChromeOptions()
+#
+# chrome_option.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+# chrome_option.add_argument("--headless")
+# chrome_option.add_argument("--no-sandbox")
+# chrome_option.add_argument("--disable-dev-sh-usage")
+
+
+chrome_options = webdriver.ChromeOptions()
+chrome_options.add_argument('--disable-gpu')
+chrome_options.add_argument('--no-sandbox')
+chrome_options.binary_location = GOOGLE_CHROME_PATH
 
 
 def review(searchString, expected_review):
     try:
-        scrapper_object = FlipkratScrapper(executable_path=os.environ.get("CHROMEDRIVER_PATH"),
-                                           chrome_options=chrome_option)
+        scrapper_object = FlipkratScrapper(executable_path=CHROMEDRIVER_PATH, chrome_options=chrome_options)
         mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
         url = "https://www.flipkart.com/"
         db_name = 'Flipkart-Scrapper'
