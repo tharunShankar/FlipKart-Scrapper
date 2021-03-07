@@ -184,14 +184,12 @@ class FlipkratScrapper:
         try:
             actual_product_link = self.getProductLinks()
             print(actual_product_link)
-            productLinks = []
-            count = 0
+            # productLinks = []
             for link in actual_product_link:
-                if count <= 15:
-                    if '?pid=' in link:
-                        productLinks.append(link)
-                count = count + 1
-            return productLinks
+                if '?pid=' in link:
+                        yield link
+                else:
+                    continue
         except Exception as e:
             self.driver.refresh()
             raise Exception(f"(actualProductLinks) - Something went wrong while searching the url.\n" + str(e))
