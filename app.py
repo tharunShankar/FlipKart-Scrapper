@@ -44,10 +44,10 @@ def index():
                 if len(reviews) > 500:
                     return render_template('results.html', result=reviews)  # show the results to user
                 else:
-                    reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610')
+                    reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610', searchString=searchString)
                     return Response(stream_template('results.html', rows=reviews))
             else:
-                reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610')
+                reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610', searchString=searchString)
                 return Response(stream_template('results.html', rows=reviews))  # showing the review to the user
 
         except Exception as e:
