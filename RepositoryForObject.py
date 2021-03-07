@@ -214,14 +214,14 @@ class ObjectRepository:
 #     #     more_review = "_2MImiq"
 #     #     return more_review
 #
-#     def getMoreReviewUsingClass(self):
-#         more_review_1 = "_3at_-o"
-#         more_review_2 = "_3UAT2v"
-#         return more_review_1, more_review_2
+    def getMoreReviewUsingClass(self):
+        more_review_1 = "_3at_-o"
+        more_review_2 = "_3UAT2v"
+        return more_review_1, more_review_2
 #
-#     def getNextFromTotalReviewPage(self):
-#         next_button = "_1LKTO3"
-#         return next_button
+    def getNextFromTotalReviewPage(self):
+        next_button = "_1LKTO3"
+        return next_button
 #
 # #
 # class ObjectRepository:
