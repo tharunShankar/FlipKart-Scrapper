@@ -34,10 +34,14 @@ def index():
         searchString = request.form['content'].replace(" ", "")  # obtaining the search string entered in the form
         expected_review = int(request.form['expected_review'])
         try:
+            url = "https://www.flipkart.com/"
             scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
                                                chrome_options=chrome_options)
             mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
             db_name = 'Flipkart-Scrapper'
+            scrapper_object.openUrl(url=url)
+            scrapper_object.login_popup_handle()
+            scrapper_object.searchProduct(searchString=searchString)
             if mongoClient.isCollectionPresent(collection_name=searchString, db_name=db_name):
                 response = mongoClient.findAllRecords(db_name=db_name, collection_name=searchString)
                 reviews = [i for i in response]
