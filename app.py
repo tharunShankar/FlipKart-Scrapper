@@ -45,9 +45,15 @@ def index():
                 if len(reviews) > 500:
                     return render_template('results.html', result=reviews)  # show the results to user
                 else:
+                    scrapper_object.openUrl(url="https://www.flipkart.com/")
+                    scrapper_object.login_popup_handle()
+                    scrapper_object.searchProduct(searchString=searchString)
                     reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610', searchString=searchString)
                     return Response(stream_template('results.html', rows=reviews))
             else:
+                scrapper_object.openUrl(url="https://www.flipkart.com/")
+                scrapper_object.login_popup_handle()
+                scrapper_object.searchProduct(searchString=searchString)
                 reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610', searchString=searchString)
                 return Response(stream_template('results.html', rows=reviews))  # showing the review to the user
 

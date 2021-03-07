@@ -593,9 +593,6 @@ class FlipkratScrapper:
         This function returns the review and other detials of product
         """
         try:
-            self.openUrl(url="https://www.flipkart.com/")
-            self.login_popup_handle()
-            self.searchProduct(searchString=searchString)
             mongoClient = MongoDBManagement(username=username, password=password)
             links = self.actualProductLinks(searchString)
             print(links)
