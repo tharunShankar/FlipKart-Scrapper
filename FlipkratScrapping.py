@@ -185,9 +185,12 @@ class FlipkratScrapper:
             actual_product_link = self.getProductLinks()
             print(actual_product_link)
             # productLinks = []
+            count = 0
             for link in actual_product_link:
+                if count <= 15: break
                 if '?pid=' in link:
-                        yield link
+                    yield str(link)
+                    count = count + 1
                 else:
                     continue
         except Exception as e:
