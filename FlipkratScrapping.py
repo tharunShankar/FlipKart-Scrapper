@@ -185,15 +185,12 @@ class FlipkratScrapper:
             actual_product_link = self.getProductLinks()
             print(actual_product_link)
             productLinks = []
-            search = searchString
-            if len(actual_product_link) < 0:
-                searchString = search[0:len(searchString) - 1:] + '-' + search[-1]
+            count = 0
             for link in actual_product_link:
-                if searchString.capitalize() in link or searchString.upper() in link or searchString.lower() in link:
+                if count <= 15:
                     if '?pid=' in link:
                         productLinks.append(link)
-                else:
-                    continue
+                count = count + 1
             return productLinks
         except Exception as e:
             self.driver.refresh()
