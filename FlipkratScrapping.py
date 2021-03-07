@@ -10,32 +10,20 @@ from RepositoryForObject import ObjectRepository
 from selenium.webdriver.common.by import By
 import pandas as pd
 
+from mongoDBOperations import MongoDBManagement
+
 
 class FlipkratScrapper:
 
-    def __init__(self, executable_path,chrome_options):
+    def __init__(self, executable_path, chrome_options):
         """
         This function initializes the web browser driver
         :param executable_path: executable path of chrome driver.
         """
         try:
-            self.driver = webdriver.Chrome(executable_path=executable_path,chrome_options=chrome_options)
+            self.driver = webdriver.Chrome(executable_path=executable_path, chrome_options=chrome_options)
         except Exception as e:
             raise Exception(f"(__init__): Something went wrong on initializing the webdriver object.\n" + str(e))
-
-    def openUrl(self, url):
-        """
-        This function open the particular url passed.
-        :param url: URL to be opened.
-        """
-        try:
-            if self.driver:
-                self.driver.get(url)
-                return True
-            else:
-                return False
-        except Exception as e:
-            raise Exception(f"(openUrl) - Something went wrong on opening the url {url}.\n" + str(e))
 
     def waitExplicitlyForCondition(self, element_to_be_found):
         """
@@ -48,7 +36,6 @@ class FlipkratScrapper:
             return True
         except Exception as e:
             return False
-            raise Exception(f"(waitExplicitlyForCondition) - Something went wrong while waiting.\n" + str(e))
 
     def getCurrentWindowUrl(self):
         """
@@ -60,30 +47,6 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(getCurrentWindowUrl) - Something went wrong on retrieving current url.\n" + str(e))
 
-    def getTitle(self, url):
-        """
-        This function retrieves the title of particular url given
-        """
-        try:
-            url_retrieved = self.getCurrentWindowUrl()
-            if url_retrieved == url:
-                return self.driver.title
-        except Exception as e:
-            raise Exception(f"(getTitle) - Cannot retrieve the title of given url.\n" + str(e))
-
-    def checkPageTitle(self, title):
-        """
-        This function checks the title of the current url.
-        """
-        try:
-            retrieved_title = self.getTitle(url=self.getCurrentWindowUrl())
-            if retrieved_title == title:
-                return True
-            else:
-                return False
-        except Exception as e:
-            raise Exception(f"(checkTitleForPage) - Something went wrong on checking title.\n" + str(e))
-
     def getLocatorsObject(self):
         """
         This function initializes the Locator object and returns the locator object
@@ -93,19 +56,6 @@ class FlipkratScrapper:
             return locators
         except Exception as e:
             raise Exception(f"(getLocatorsObject) - Could not find locators\n" + str(e))
-
-    def login_popup_handle(self):
-        """
-        This function handle/closes the login popup displayed.
-        """
-        try:
-            locator = self.getLocatorsObject()
-            close_button_path = locator.getLoginCloseButton()
-            element = self.findElementByXpath(close_button_path)
-            element.click()
-            return True
-        except Exception as e:
-            raise Exception("(login_popup_handle) - Failed to handle popup.\n" + str(e))
 
     def findElementByXpath(self, xpath):
         """
@@ -134,12 +84,58 @@ class FlipkratScrapper:
         This function finds web element using tag_name provided
         """
         try:
-            # element = self.driver.find_element(By.TAG_NAME,tag_name)
             element = self.driver.find_elements_by_tag_name(tag_name)
             return element
         except Exception as e:
-            # self.driver.refresh()
             raise Exception(f"(findElementByTag) - ClassPath provided was not found.\n" + str(e))
+
+    def findingElementsFromPageUsingClass(self, element_to_be_searched):
+        """
+        This function finds all element from the page.
+        """
+        try:
+            result = self.driver.find_elements(By.CLASS_NAME, value=element_to_be_searched)
+            return result
+        except Exception as e:
+            raise Exception(
+                f"(findingElementsFromPageUsingClass) - Something went wrong on searching the element.\n" + str(e))
+
+    def findingElementsFromPageUsingCSSSelector(self, element_to_be_searched):
+        """
+        This function finds all element from the page.
+        """
+        try:
+            result = self.driver.find_elements(By.CSS_SELECTOR, value=element_to_be_searched)
+            return result
+        except Exception as e:
+            raise Exception(
+                f"(findingElementsFromPageUsingClass) - Something went wrong on searching the element.\n" + str(e))
+
+    def openUrl(self, url):
+        """
+        This function open the particular url passed.
+        :param url: URL to be opened.
+        """
+        try:
+            if self.driver:
+                self.driver.get(url)
+                return True
+            else:
+                return False
+        except Exception as e:
+            raise Exception(f"(openUrl) - Something went wrong on opening the url {url}.\n" + str(e))
+
+    def login_popup_handle(self):
+        """
+        This function handle/closes the login popup displayed.
+        """
+        try:
+            self.wait()
+            locator = self.getLocatorsObject()
+            self.findElementByXpath(xpath=locator.getLoginCloseButton()).click()
+            return True
+        except Exception as e:
+            raise Exception("(login_popup_handle) - Failed to handle popup.\n" + str(e))
 
     def searchProduct(self, searchString):
         """
@@ -167,81 +163,37 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(generateTitle) - Something went wrong while generating complete title.\n" + str(e))
 
-    def getAnchorTags(self):
-        """
-        This function retrives all the anchor tag for the current page displayed
-        """
-        try:
-            all_links = self.findElementByTag('a')
-            return all_links
-        except Exception as e:
-            self.driver.refresh()
-            raise Exception(f"(getAnchorTags) - Something went wrong while finding url of products.\n" + str(e))
-
     def getProductLinks(self):
         """
         This function returns all the list of links.
         """
         try:
-            locator = self.getLocatorsObject()
+            self.driver.refresh()
             links = []
             all_links = self.findElementByTag('a')
             for link in all_links:
                 links.append(link.get_attribute('href'))
             return links
         except Exception as e:
-            self.waitExplicitlyForCondition(element_to_be_found=locator.getElementTobeSearched())
-            all_links = self.findElementByTag('a')
-            for link in all_links:
-                links.append(link.get_attribute('href'))
-            return links
-            raise Exception(f"(getProductLinks) - Something went wrong on retrieving product links.\n" + str(e))
-
-    def filterProductLink(self, search_string):
-        """
-        This function helps to filter the list of product links based on search string.
-        """
-        try:
-            all_links = self.getProductLinks()
-            product_link = []
-            for link in all_links:
-                if search_string.capitalize() in link or search_string.upper() in link or search_string.lower() in link:
-                    product_link.append(link)
-            return product_link
-        except Exception as e:
-            self.driver.refresh()
-            raise Exception(f"(filterProductLink) - Something went wrong while filtering the links passed.\n" + str(e))
-
-    def getUrlDict(self, filtered_list):
-        """
-        This function returns list of links in dictionary format
-        """
-        try:
-            link_dict = {i for i in filtered_list}
-            return link_dict
-        except Exception as e:
-            # self.driver.refresh()
-            raise Exception(
-                f"(getUrlDict) - Something went wrong on converting list to dictonary for links.\n" + str(e))
+            raise Exception(f"(getProductLinks) - Something went wrong on getting link from the page.")
 
     def actualProductLinks(self, searchString):
         """
         This function returns the actual product links after filtering.
         """
         try:
-            filter_Products = self.filterProductLink(search_string=searchString)
-            actual_product_link = []
-            for link in filter_Products:
-                if '?pid=' in link:
-                    self.openUrl(url = link)
-                    actual_product_link.append(link)
+            actual_product_link = self.getProductLinks()
+            productLinks = []
+            for link in actual_product_link:
+                if searchString.capitalize() in link or searchString.upper() in link or searchString.lower() in link:
+                    if '?pid=' in link:
+                        productLinks.append(link)
                 else:
-                    self.driver.close()
                     continue
-            return actual_product_link
+            return productLinks
         except Exception as e:
             # self.driver.refresh()
-            raise Exception(f"(actualProductLinks) - Something went wrong while opening the url.\n" + str(e))
+            raise Exception(f"(actualProductLinks) - Something went wrong while searching the url.\n" + str(e))
 
     def getLinkForExpectedReviewCount(self, expected_review, searchString):
         """
@@ -256,7 +208,6 @@ class FlipkratScrapper:
                 self.openUrl(url=url_to_hit)
                 total_review_page = self.getTotalReviewPage()
                 count = total_review_page
-                self.driver.close()
             self.openUrl(url=url_to_hit)
             return True
         except Exception as e:
@@ -306,7 +257,6 @@ class FlipkratScrapper:
             return product_name
         except Exception as e:
             return search_string
-            raise Exception(f"(getProductSearched) - Not able to get the product searched.\n" + str(e))
 
     def getPrice(self):
         """
@@ -386,7 +336,7 @@ class FlipkratScrapper:
             print(split_offers[1:])
             return split_offers[1:]
         except Exception as e:
-            raise Exception(f"(formatOfferDetails) - Something went wrong on retriving offer details.\n" + str(e))
+            return "No offer Available"
 
     def checkViewPlanForEMI(self):
         """
@@ -413,47 +363,11 @@ class FlipkratScrapper:
             status = self.checkViewPlanForEMI()
             if status:
                 emi_detail = self.findElementByXpath(xpath=locator.getEMIDetail()).text
-                print(emi_detail)
                 return emi_detail
             else:
                 return "NO EMI Plans"
         except Exception as e:
             return "NO EMI Plans"
-            raise Exception(f"(getEMIDetails) - Not able to get the emi details of product.\n" + str(e))
-
-    # def checkForMoreReview(self):
-    #     """
-    #     This function checks whether there are more reviews or not on the page.
-    #     """
-    #     try:
-    #         locator = self.getLocatorsObject()
-    #         more_review = locator.getMoreReviewUsingClass()
-    #         more_review_1, more_review_2 = more_review[0], more_review[1]
-    #         if more_review_1 in self.driver.page_source:
-    #             return True, more_review_1
-    #         elif more_review_2 in self.driver.page_source:
-    #             return True, more_review_2
-    #         else:
-    #             return False
-    #     except Exception as e:
-    #         raise Exception(f"(checkForMoreReview) - Not able to check for more review.\n" + str(e))
-
-    # def clickOnMoreReview(self):
-    #     """
-    #     This function click on All reviews link on the web page
-    #     """
-    #     try:
-    #         status = self.checkForMoreReview()
-    #         self.wait()
-    #         if status:
-    #             locator = self.getLocatorsObject()
-    #             more_review = self.findElementByClass(classpath=status[1])
-    #             more_review.click()
-    #             return True
-    #         else:
-    #             return False
-    #     except Exception as e:
-    #         raise Exception(f"(clickOnMoreReview) - Not able to click on more review.\n" + str(e))
 
     def getTotalReviewPage(self):
         """
@@ -484,31 +398,9 @@ class FlipkratScrapper:
         This function waits for the given time
         """
         try:
-            self.driver.implicitly_wait(10)
+            self.driver.implicitly_wait(5)
         except Exception as e:
             raise Exception(f"(wait) - Something went wrong.\n" + str(e))
-
-    def findingElementsFromPageUsingClass(self, element_to_be_searched):
-        """
-        This function finds all element from the page.
-        """
-        try:
-            result = self.driver.find_elements(By.CLASS_NAME, value=element_to_be_searched)
-            return result
-        except Exception as e:
-            raise Exception(
-                f"(findingElementsFromPageUsingClass) - Something went wrong on searching the element.\n" + str(e))
-
-    def findingElementsFromPageUsingCSSSelector(self, element_to_be_searched):
-        """
-        This function finds all element from the page.
-        """
-        try:
-            result = self.driver.find_elements(By.CSS_SELECTOR, value=element_to_be_searched)
-            return result
-        except Exception as e:
-            raise Exception(
-                f"(findingElementsFromPageUsingClass) - Something went wrong on searching the element.\n" + str(e))
 
     def getRatings(self):
         """
@@ -570,27 +462,24 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(getExpectedCountForLooping) - Something went wrong with review count.\n" + str(e))
 
-    def getReviewDetailsForProduct(self, expected_review):
+    def getReviewDetailsForProduct(self):
         """
         This function gets all Review Details for the product
         """
         try:
             locator = self.getLocatorsObject()
             ratings, comment, customer_name, review_age = [], [], [], []
-            expected_count = self.getExpectedCountForLooping(expected_review=expected_review)
-            self.getTotalReviewPage()
-            for page in range(0, expected_count + 1):
-                page_no = page + 2
-                current_url = self.driver.current_url
-                new_url = current_url + "&page=" + str(page_no)
-                comment.append([i.text for i in self.getComments()])
-                ratings.append([i.text for i in self.getRatings()])
-                cust_name_and_review_age = [i.text for i in self.getCustomerNamesAndReviewAge()]
-                customer_name.append(
-                    self.separateCustomernameAndReviewAge(list_of_custname_and_reviewage=cust_name_and_review_age)[0])
-                review_age.append(
-                    self.separateCustomernameAndReviewAge(list_of_custname_and_reviewage=cust_name_and_review_age)[1])
-                self.openUrl(url=new_url)
+            # if locator.getNextFromTotalReviewPage() in self.driver.page_source:
+            #     current_url = self.driver.current_url
+            #     new_url = current_url + "&page=" + str(page_no)
+            comment.append([i.text for i in self.getComments()])
+            ratings.append([i.text for i in self.getRatings()])
+            cust_name_and_review_age = [i.text for i in self.getCustomerNamesAndReviewAge()]
+            customer_name.append(
+                self.separateCustomernameAndReviewAge(list_of_custname_and_reviewage=cust_name_and_review_age)[0])
+            review_age.append(
+                self.separateCustomernameAndReviewAge(list_of_custname_and_reviewage=cust_name_and_review_age)[1])
+            # self.openUrl(url=new_url)
             return ratings, comment, customer_name, review_age
         except Exception as e:
             # self.driver.refresh()
@@ -698,3 +587,77 @@ class FlipkratScrapper:
             self.driver.close()
         except Exception as e:
             raise Exception(f"(closeConnection) - Something went wrong on closing connection.\n" + str(e))
+
+    def getReviewsToDisplay(self, searchString, expected_review, username, password):
+        """
+        This function returns the review and other detials of product
+        """
+        try:
+            mongoClient = MongoDBManagement(username=username, password=password)
+            links = self.actualProductLinks(searchString)
+            print(links)
+            locator = self.getLocatorsObject()
+            review_count = 0
+            while review_count <= expected_review:
+                for link in links:
+                    print(link)
+                    print(review_count)
+                    self.openUrl(url=link)
+                    if locator.getCustomerName() in self.driver.page_source:
+                        product_name = self.getProductName()
+                        print(product_name)
+                        product_searched = self.getProductSearched(search_string=searchString)
+                        print(product_searched)
+                        price = self.getPrice()
+                        print(price)
+                        offer_details = self.getOfferDetails()
+                        print(offer_details)
+                        discount_percent = self.getDiscountedPercent()
+                        print(discount_percent)
+                        EMI = self.getEMIDetails()
+                        print(EMI)
+                        if locator.getMoreReviewUsingClass()[0] in self.driver.page_source or \
+                                locator.getMoreReviewUsingClass()[1] in self.driver.page_source:
+                            total_review_page = self.getTotalReviewPage()
+                            print(total_review_page)
+                            count = 0
+                            while count <= total_review_page:
+                                if review_count <= expected_review:
+                                    review_count = review_count + 1
+                                    count = count + 1
+                                    current_url = self.driver.current_url
+                                    new_url = current_url + "&page=" + str(count + 1)
+                                    response = self.getReviewDetailsForProduct()
+                                    print(response)
+                                    ratings = response[0]
+                                    print(ratings)
+                                    comment = response[1]
+                                    print(comment)
+                                    customer_name = response[2]
+                                    print(customer_name)
+                                    review_age = response[3]
+                                    print(review_age)
+                                    if len(ratings[0]) > 0:
+                                        for i in range(0, len(ratings[0])):
+                                            result = {'product_name': product_name,
+                                                      'product_searched': product_searched,
+                                                      'price': price,
+                                                      'offer_details': offer_details,
+                                                      'discount_percent': discount_percent,
+                                                      'EMI': EMI,
+                                                      'rating': ratings[0][i],
+                                                      'comment': comment[0][i],
+                                                      'customer_name': customer_name[0][i],
+                                                      'review_age': review_age[0][i]}
+                                            mongoClient.insertRecord(db_name="Flipkart-Scrapper",
+                                                                     collection_name=searchString,
+                                                                     record=result)
+                                            print(result)
+                                            yield result
+                                            review_count = review_count + 1
+                                    self.openUrl(url=new_url)
+                    else:
+                        continue
+        except Exception as e:
+            yield mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=searchString)
+            raise Exception(f"(getReviewsToDisplay) - Something went wrong on yielding data.\n" + str(e))
