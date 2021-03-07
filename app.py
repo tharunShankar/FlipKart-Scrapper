@@ -35,9 +35,8 @@ def index():
         searchString = request.form['content'].replace(" ", "")  # obtaining the search string entered in the form
         expected_review = int(request.form['expected_review'])
         try:
-             scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
-                                                chrome_options=chrome_options)
-            # scrapper_object = FlipkratScrapper(executable_path="C:\Kavita\chromedriver_win32\chromedriver.exe",chrome_options=None)
+            scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
+                                               chrome_options=chrome_options)
             mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
             db_name = 'Flipkart-Scrapper'
             scrapper_object.openUrl("https://www.flipkart.com/")
