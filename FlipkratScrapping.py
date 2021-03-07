@@ -183,7 +183,11 @@ class FlipkratScrapper:
         """
         try:
             actual_product_link = self.getProductLinks()
+            print(actual_product_link)
             productLinks = []
+            search = searchString
+            if len(actual_product_link) < 0:
+                searchString = search[0:len(searchString) - 1:] + '-' + search[-1]
             for link in actual_product_link:
                 if searchString.capitalize() in link or searchString.upper() in link or searchString.lower() in link:
                     if '?pid=' in link:
@@ -192,7 +196,7 @@ class FlipkratScrapper:
                     continue
             return productLinks
         except Exception as e:
-            # self.driver.refresh()
+            self.driver.refresh()
             raise Exception(f"(actualProductLinks) - Something went wrong while searching the url.\n" + str(e))
 
     def getLinkForExpectedReviewCount(self, expected_review, searchString):

@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
 
 
-      <link rel="stylesheet" href="./stylme.css">
+    <link rel="stylesheet" href="./stylme.css">
    <link rel="stylesheet" href="css/style.css">
 
 
@@ -32,18 +32,18 @@
           <th width="230"><b>Comments</b></th>
           <th><b>Review Age</b></th>
       </tr>
-       {% for review in result %}
+       {% for review in rows %}
       <tr>
           <td>{{review['product_searched']}}</td>
           <td>{{review['product_name']}}</td>
           <td>{{review['price']}}</td>
           <td>{{review['discount_percent']}}</td>
           <td>{{review['offer_details']}}</td>
-          <td>{{review['ratings']}} </td>
-          <td>{{review['EMI']}} </td>
+           <td>{{review['EMI']}} </td>
+          <td>{{review['rating']}} </td>
           <td>{{review['customer_name']}}</td>
-          <td>{{review['comments']}}</td>
-          <td>{{review['review_Age']}}</td>
+          <td>{{review['comment']}}</td>
+          <td>{{review['review_age']}}</td>
        {% endfor %}
    </table>
 </div>

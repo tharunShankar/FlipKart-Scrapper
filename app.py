@@ -15,7 +15,6 @@ import json
 app = Flask(__name__)  # initialising the flask app with the name 'app'
 
 chrome_options = webdriver.ChromeOptions()
-chrome_options.add_argument('--headless')
 chrome_options.add_argument('--disable-gpu')
 chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument("disable-dev-shm-usage")
@@ -28,6 +27,7 @@ def stream_template(template_name, **context):
     rv.enable_buffering(5)
     return rv
 
+
 @app.route('/', methods=['POST', 'GET'])
 @cross_origin()
 def index():
@@ -35,26 +35,28 @@ def index():
         searchString = request.form['content'].replace(" ", "")  # obtaining the search string entered in the form
         expected_review = int(request.form['expected_review'])
         try:
-            scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
-                                               chrome_options=chrome_options)
+            # scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
+            #                                    chrome_options=chrome_options)
+            scrapper_object = FlipkratScrapper(executable_path="C:\Kavita\chromedriver_win32\chromedriver.exe",chrome_options=None)
             mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
             db_name = 'Flipkart-Scrapper'
+            scrapper_object.openUrl("https://www.flipkart.com/")
+            scrapper_object.login_popup_handle()
+            scrapper_object.searchProduct(searchString=searchString)
             if mongoClient.isCollectionPresent(collection_name=searchString, db_name=db_name):
                 response = mongoClient.findAllRecords(db_name=db_name, collection_name=searchString)
                 reviews = [i for i in response]
                 if len(reviews) > 500:
                     return render_template('results.html', result=reviews)  # show the results to user
                 else:
-                    scrapper_object.openUrl(url="https://www.flipkart.com/")
-                    scrapper_object.login_popup_handle()
-                    scrapper_object.searchProduct(searchString=searchString)
-                    reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610', searchString=searchString)
+                    reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
+                                                                  searchString=searchString, username='Kavita',
+                                                                  password='kavita1610')
                     return Response(stream_template('results.html', rows=reviews))
             else:
-                scrapper_object.openUrl(url="https://www.flipkart.com/")
-                scrapper_object.login_popup_handle()
-                scrapper_object.searchProduct(searchString=searchString)
-                reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review, username='Kavita', password='kavita1610', searchString=searchString)
+                reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
+                                                              searchString=searchString, username='Kavita',
+                                                              password='kavita1610')
                 return Response(stream_template('results.html', rows=reviews))  # showing the review to the user
 
         except Exception as e:
@@ -65,4 +67,4 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run()  # running the app on the local machine on port 8000
+    app.run(debug=True,port=8000)  # running the app on the local machine on port 8000
