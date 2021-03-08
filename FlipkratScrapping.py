@@ -31,7 +31,7 @@ class FlipkratScrapper:
         """
         try:
             ignored_exceptions = (NoSuchElementException, StaleElementReferenceException,)
-            WebDriverWait(self.driver, 10, ignored_exceptions=ignored_exceptions).until(
+            WebDriverWait(self.driver, 2, ignored_exceptions=ignored_exceptions).until(
                 expected_conditions.presence_of_element_located((By.CLASS_NAME, element_to_be_found)))
             return True
         except Exception as e:
@@ -392,9 +392,7 @@ class FlipkratScrapper:
             if self.waitExplicitlyForCondition(element_to_be_found=locator.getNextFromTotalReviewPage()):
                 total_review_page = [self.findElementByClass(classpath=locator.getTotalReviewPage()).text][0]
                 split_values = total_review_page.split("\n")
-                print(split_values)
                 value = str(split_values[0]).split()[-1]
-                print(value)
                 return int(value)
             else:
                 return 1
@@ -606,7 +604,6 @@ class FlipkratScrapper:
             review_count = 0
             while review_count <= expected_review:
                 for link in self.getProductLinks():
-                    print(link)
                     self.openUrl(url=link)
                     if locator.getCustomerName() in self.driver.page_source:
                         product_name = self.getProductName()
@@ -621,46 +618,44 @@ class FlipkratScrapper:
                         print(discount_percent)
                         EMI = self.getEMIDetails()
                         print(EMI)
-                        if locator.getMoreReviewUsingClass()[0] in self.driver.page_source or \
-                                locator.getMoreReviewUsingClass()[1] in self.driver.page_source:
-                            total_review_page = self.getTotalReviewPage()
-                            print(total_review_page)
-                            count = 0
-                            while count <= total_review_page:
-                                if review_count <= expected_review:
-                                    review_count = review_count + 1
-                                    count = count + 1
-                                    current_url = self.driver.current_url
-                                    new_url = current_url + "&page=" + str(count + 1)
-                                    response = self.getReviewDetailsForProduct()
-                                    print(response)
-                                    ratings = response[0]
-                                    print(ratings)
-                                    comment = response[1]
-                                    print(comment)
-                                    customer_name = response[2]
-                                    print(customer_name)
-                                    review_age = response[3]
-                                    print(review_age)
-                                    if len(ratings[0]) > 0:
-                                        for i in range(0, len(ratings[0])):
-                                            result = {'product_name': product_name,
-                                                      'product_searched': product_searched,
-                                                      'price': price,
-                                                      'offer_details': offer_details,
-                                                      'discount_percent': discount_percent,
-                                                      'EMI': EMI,
-                                                      'rating': ratings[0][i],
-                                                      'comment': comment[0][i],
-                                                      'customer_name': customer_name[0][i],
-                                                      'review_age': review_age[0][i]}
-                                            mongoClient.insertRecord(db_name="Flipkart-Scrapper",
-                                                                     collection_name=searchString,
-                                                                     record=result)
-                                            print(result)
-                                            yield result
-                                            review_count = review_count + 1
-                                    self.openUrl(url=new_url)
+                        total_review_page = self.getTotalReviewPage()
+                        print(total_review_page)
+                        count = 0
+                        while count <= total_review_page:
+                            if review_count <= expected_review:
+                                review_count = review_count + 1
+                                count = count + 1
+                                current_url = self.driver.current_url
+                                new_url = current_url + "&page=" + str(count + 1)
+                                response = self.getReviewDetailsForProduct()
+                                print(response)
+                                ratings = response[0]
+                                print(ratings)
+                                comment = response[1]
+                                print(comment)
+                                customer_name = response[2]
+                                print(customer_name)
+                                review_age = response[3]
+                                print(review_age)
+                                if len(ratings[0]) > 0:
+                                    for i in range(0, len(ratings[0])):
+                                        result = {'product_name': product_name,
+                                                  'product_searched': product_searched,
+                                                  'price': price,
+                                                  'offer_details': offer_details,
+                                                  'discount_percent': discount_percent,
+                                                  'EMI': EMI,
+                                                  'rating': ratings[0][i],
+                                                  'comment': comment[0][i],
+                                                  'customer_name': customer_name[0][i],
+                                                  'review_age': review_age[0][i]}
+                                        mongoClient.insertRecord(db_name="Flipkart-Scrapper",
+                                                                 collection_name=searchString,
+                                                                 record=result)
+                                        print(result)
+                                        yield result
+                                        review_count = review_count + 1
+                                self.openUrl(url=new_url)
                     else:
                         continue
         except Exception as e:
