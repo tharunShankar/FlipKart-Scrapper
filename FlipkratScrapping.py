@@ -168,7 +168,6 @@ class FlipkratScrapper:
         This function returns all the list of links.
         """
         try:
-            self.driver.refresh()
             links = []
             all_links = self.findElementByTag('a')
             for link in all_links:
@@ -200,7 +199,6 @@ class FlipkratScrapper:
                     continue
             return productLinks
         except Exception as e:
-            self.driver.refresh()
             raise Exception(f"(actualProductLinks) - Something went wrong while searching the url.\n" + str(e))
 
     def getLinkForExpectedReviewCount(self, expected_review, searchString):
@@ -234,7 +232,6 @@ class FlipkratScrapper:
             else:
                 return False
         except Exception as e:
-            self.driver.refresh()
             raise Exception(f"(checkVisibilityOfElement) - Not able to check for the element.\n" + str(e))
 
     def getProductName(self):
@@ -251,7 +248,6 @@ class FlipkratScrapper:
             print(product_name)
             return product_name
         except Exception as e:
-            self.driver.refresh()
             raise Exception(f"(getProductName) - Not able to get the product name.\n" + str(e))
 
     def getProductSearched(self, search_string):
@@ -276,7 +272,6 @@ class FlipkratScrapper:
             print(original_price)
             return original_price
         except Exception as e:
-            self.driver.refresh()
             raise Exception(f"(getPrice) - Not able to get the price of product.\n" + str(e))
 
     def getDiscountedPercent(self):
@@ -639,5 +634,5 @@ class FlipkratScrapper:
                     else:
                         continue
         except Exception as e:
-            yield mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=searchString)
+            return mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=searchString)
             raise Exception(f"(getReviewsToDisplay) - Something went wrong on yielding data.\n" + str(e))
