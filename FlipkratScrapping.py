@@ -184,15 +184,16 @@ class FlipkratScrapper:
         try:
             actual_product_link = self.getProductLinks()
             print(actual_product_link)
-            # productLinks = []
+            productLinks = []
             count = 0
             for link in actual_product_link:
-                if count <= 15: break
+                if count > 15: break
                 if '?pid=' in link:
-                    yield str(link)
+                    productLinks.append(link)
                     count = count + 1
                 else:
                     continue
+            return productLinks
         except Exception as e:
             self.driver.refresh()
             raise Exception(f"(actualProductLinks) - Something went wrong while searching the url.\n" + str(e))
@@ -590,14 +591,12 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(closeConnection) - Something went wrong on closing connection.\n" + str(e))
 
-    def getReviewsToDisplay(self, searchString, expected_review, username, password):
+    def getReviewsToDisplay(self, searchString, expected_review, username, password, links):
         """
         This function returns the review and other detials of product
         """
         try:
             mongoClient = MongoDBManagement(username=username, password=password)
-            links = self.actualProductLinks(searchString)
-            print(links)
             locator = self.getLocatorsObject()
             review_count = 0
             while review_count <= expected_review:
@@ -660,6 +659,7 @@ class FlipkratScrapper:
                                     self.openUrl(url=new_url)
                     else:
                         continue
+            self.driver.close()
         except Exception as e:
             yield mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=searchString)
             raise Exception(f"(getReviewsToDisplay) - Something went wrong on yielding data.\n" + str(e))

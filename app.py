@@ -41,21 +41,26 @@ def index():
             db_name = 'Flipkart-Scrapper'
             scrapper_object.openUrl("https://www.flipkart.com/")
             scrapper_object.login_popup_handle()
-            scrapper_object.searchProduct(searchString=searchString)
             if mongoClient.isCollectionPresent(collection_name=searchString, db_name=db_name):
                 response = mongoClient.findAllRecords(db_name=db_name, collection_name=searchString)
                 reviews = [i for i in response]
-                if len(reviews) > 500:
-                    return render_template('results.html', result=reviews)  # show the results to user
+                if len(reviews) > expected_review:
+                    return render_template('results.html', rows=reviews)  # show the results to user
                 else:
+                    scrapper_object.searchProduct(searchString=searchString)
+                    actual_product = scrapper_object.actualProductLinks(searchString=searchString)
+                    print(actual_product)
                     reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
                                                                   searchString=searchString, username='Kavita',
-                                                                  password='kavita1610')
+                                                                  password='kavita1610', links=actual_product)
                     return Response(stream_template('results.html', rows=reviews))
             else:
+                scrapper_object.searchProduct(searchString=searchString)
+                actual_product = scrapper_object.actualProductLinks(searchString=searchString)
+                print(actual_product)
                 reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
                                                               searchString=searchString, username='Kavita',
-                                                              password='kavita1610')
+                                                              password='kavita1610', links=actual_product)
                 return Response(stream_template('results.html', rows=reviews))  # showing the review to the user
 
         except Exception as e:
