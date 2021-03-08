@@ -640,11 +640,11 @@ class FlipkratScrapper:
                                                   'comment': comment[0][i],
                                                   'customer_name': customer_name[0][i],
                                                   'review_age': review_age[0][i]}
+                                        print(result)
+                                        yield result
                                         mongoClient.insertRecord(db_name="Flipkart-Scrapper",
                                                                  collection_name=searchString,
                                                                  record=result)
-                                        print(result)
-                                        yield result
                                         review_count = review_count + 1
                                 self.openUrl(url=new_url)
                     else:
