@@ -401,7 +401,7 @@ class FlipkratScrapper:
         This function waits for the given time
         """
         try:
-            self.driver.implicitly_wait(5)
+            self.driver.implicitly_wait(2)
         except Exception as e:
             raise Exception(f"(wait) - Something went wrong.\n" + str(e))
 
@@ -630,6 +630,7 @@ class FlipkratScrapper:
                                                   'review_age': review_age[0][i]}
                                         print(result)
                                         yield result
+                                        self.wait()
                                         mongoClient.insertRecord(db_name="Flipkart-Scrapper",
                                                                  collection_name=searchString,
                                                                  record=result)
