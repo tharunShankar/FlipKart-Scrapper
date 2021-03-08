@@ -173,7 +173,13 @@ class FlipkratScrapper:
             all_links = self.findElementByTag('a')
             for link in all_links:
                 links.append(link.get_attribute('href'))
-            return links
+            count = 0
+            for i in links:
+                if count > 15: break
+                if '?pid=' in i:
+                    print(i)
+                    count = count + 1
+                    yield str(i)
         except Exception as e:
             raise Exception(f"(getProductLinks) - Something went wrong on getting link from the page.")
 
@@ -182,14 +188,13 @@ class FlipkratScrapper:
         This function returns the actual product links after filtering.
         """
         try:
-            all_links = self.findElementByTag('a')
             productLinks = []
             count = 0
-            for link in all_links:
+            for link in self.getProductLinks():
                 if count > 15: break
-                if '?pid=' in link.get_attribute('href'):
-                    print(link.get_attribute('href'))
-                    productLinks.append(link.get_attribute('href'))
+                if '?pid=' in link:
+                    print(link)
+                    productLinks.append(link)
                     count = count + 1
                 else:
                     continue
@@ -591,8 +596,7 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(closeConnection) - Something went wrong on closing connection.\n" + str(e))
 
-
-    def getReviewsToDisplay(self, searchString, expected_review, username, password, links):
+    def getReviewsToDisplay(self, searchString, expected_review, username, password):
         """
         This function returns the review and other detials of product
         """
@@ -601,7 +605,7 @@ class FlipkratScrapper:
             locator = self.getLocatorsObject()
             review_count = 0
             while review_count <= expected_review:
-                for link in links:
+                for link in self.getProductLinks():
                     print(link)
                     self.openUrl(url=link)
                     if locator.getCustomerName() in self.driver.page_source:
@@ -659,7 +663,6 @@ class FlipkratScrapper:
                                     self.openUrl(url=new_url)
                     else:
                         continue
-            self.driver.close()
         except Exception as e:
             yield mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=searchString)
             raise Exception(f"(getReviewsToDisplay) - Something went wrong on yielding data.\n" + str(e))

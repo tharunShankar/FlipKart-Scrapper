@@ -48,19 +48,15 @@ def index():
                     return render_template('results.html', rows=reviews)  # show the results to user
                 else:
                     scrapper_object.searchProduct(searchString=searchString)
-                    actual_product = scrapper_object.actualProductLinks()
-                    print(actual_product)
                     reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
                                                                   searchString=searchString, username='Kavita',
-                                                                  password='kavita1610', links=actual_product)
+                                                                  password='kavita1610')
                     return Response(stream_template('results.html', rows=reviews))
             else:
                 scrapper_object.searchProduct(searchString=searchString)
-                actual_product = scrapper_object.actualProductLinks()
-                print(actual_product)
                 reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
                                                               searchString=searchString, username='Kavita',
-                                                              password='kavita1610', links=actual_product)
+                                                              password='kavita1610')
                 return Response(stream_template('results.html', rows=reviews))  # showing the review to the user
 
         except Exception as e:
