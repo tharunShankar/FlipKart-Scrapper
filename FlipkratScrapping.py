@@ -177,7 +177,7 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(getProductLinks) - Something went wrong on getting link from the page.")
 
-    def actualProductLinks(self, searchString):
+    def actualProductLinks(self):
         """
         This function returns the actual product links after filtering.
         """
@@ -188,6 +188,7 @@ class FlipkratScrapper:
             for link in all_links:
                 if count > 15: break
                 if '?pid=' in link.get_attribute('href'):
+                    print(link.get_attribute('href'))
                     productLinks.append(link.get_attribute('href'))
                     count = count + 1
                 else:
