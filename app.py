@@ -50,6 +50,7 @@ def index():
                     scrapper_object.searchProduct(searchString=searchString)
                     actual_product = scrapper_object.actualProductLinks(searchString=searchString)
                     print(actual_product)
+
                     reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
                                                                   searchString=searchString, username='Kavita',
                                                                   password='kavita1610', links=actual_product)

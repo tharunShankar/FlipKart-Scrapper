@@ -182,14 +182,13 @@ class FlipkratScrapper:
         This function returns the actual product links after filtering.
         """
         try:
-            actual_product_link = self.getProductLinks()
-            print(actual_product_link)
+            all_links = self.findElementByTag('a')
             productLinks = []
             count = 0
-            for link in actual_product_link:
+            for link in all_links:
                 if count > 15: break
-                if '?pid=' in link:
-                    productLinks.append(link)
+                if '?pid=' in link.get_attribute('href'):
+                    productLinks.append(link.get_attribute('href'))
                     count = count + 1
                 else:
                     continue
@@ -591,6 +590,7 @@ class FlipkratScrapper:
         except Exception as e:
             raise Exception(f"(closeConnection) - Something went wrong on closing connection.\n" + str(e))
 
+
     def getReviewsToDisplay(self, searchString, expected_review, username, password, links):
         """
         This function returns the review and other detials of product
@@ -602,7 +602,6 @@ class FlipkratScrapper:
             while review_count <= expected_review:
                 for link in links:
                     print(link)
-                    print(review_count)
                     self.openUrl(url=link)
                     if locator.getCustomerName() in self.driver.page_source:
                         product_name = self.getProductName()
