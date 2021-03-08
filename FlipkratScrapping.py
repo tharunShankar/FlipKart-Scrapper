@@ -587,52 +587,52 @@ class FlipkratScrapper:
         This function returns the review and other detials of product
         """
         try:
+            search = searchString
             mongoClient = MongoDBManagement(username=username, password=password)
             locator = self.getLocatorsObject()
             review_count = 0
-            while review_count <= expected_review:
-                for link in self.getProductLinks():
-                    self.openUrl(url=link)
-                    if locator.getCustomerName() in self.driver.page_source:
-                        product_name = self.getProductName()
-                        product_searched = self.getProductSearched(search_string=searchString)
-                        price = self.getPrice()
-                        # offer_details = self.getOfferDetails()
-                        discount_percent = self.getDiscountedPercent()
-                        # EMI = self.getEMIDetails()
-                        total_review_page = self.getTotalReviewPage()
-                        count = 0
-                        while count <= total_review_page:
-                            if review_count <= expected_review:
+            # while review_count <= expected_review:
+            for link in self.getProductLinks():
+                if review_count > expected_review: break
+                self.openUrl(url=link)
+                if locator.getCustomerName() in self.driver.page_source:
+                    product_name = self.getProductName()
+                    product_searched = self.getProductSearched(search_string=searchString)
+                    price = self.getPrice()
+                    offer_details = self.getOfferDetails()
+                    discount_percent = self.getDiscountedPercent()
+                    EMI = self.getEMIDetails()
+                    total_review_page = self.getTotalReviewPage()
+                    count = 0
+                    while count <= total_review_page:
+                        count = count + 1
+                        new_url = self.driver.current_url + "&page=" + str(count + 1)
+                        for i in self.getReviewDetailsForProduct():
+                            ratings = i[0][0]
+                            comment = i[1][0]
+                            customer_name = i[2][0]
+                            review_age = i[3][0]
+                        if len(ratings) > 0:
+                            for i in range(0, len(ratings)):
+                                result = {'product_name': product_name,
+                                          'product_searched': product_searched,
+                                          'price': price,
+                                          'offer_details': offer_details,
+                                          'discount_percent': discount_percent,
+                                          'EMI': EMI,
+                                          'rating': ratings[i],
+                                          'comment': comment[i],
+                                          'customer_name': customer_name[i],
+                                          'review_age': review_age[i]}
+                                mongoClient.insertRecord(db_name="Flipkart-Scrapper",
+                                                         collection_name=searchString,
+                                                         record=result)
+                                print(result)
                                 review_count = review_count + 1
-                                count = count + 1
-                                new_url = self.driver.current_url + "&page=" + str(count + 1)
-                                for i in self.getReviewDetailsForProduct():
-                                    ratings = i[0][0]
-                                    comment = i[1][0]
-                                    customer_name = i[2][0]
-                                    review_age = i[3][0]
-                                if len(ratings) > 0:
-                                    for i in range(0, len(ratings)):
-                                        result = {'product_name': product_name,
-                                                  'product_searched': product_searched,
-                                                  'price': price,
-                                                  # 'offer_details': offer_details,
-                                                  'discount_percent': discount_percent,
-                                                  # 'EMI': EMI,
-                                                  'rating': ratings[i],
-                                                  'comment': comment[i],
-                                                  'customer_name': customer_name[i],
-                                                  'review_age': review_age[i]}
-                                        mongoClient.insertRecord(db_name="Flipkart-Scrapper",
-                                                                 collection_name=searchString,
-                                                                 record=result)
-                                        print(result)
-                                        yield result
-                                        review_count = review_count + 1
-                                self.openUrl(url=new_url)
-                    else:
-                        continue
+                                print(review_count)
+                        self.openUrl(url=new_url)
+                print('return' + search)
+            print('for ke bahar:' + search)
+            return search
         except Exception as e:
-            return mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=searchString)
             raise Exception(f"(getReviewsToDisplay) - Something went wrong on yielding data.\n" + str(e))
