@@ -631,9 +631,9 @@ class FlipkratScrapper:
                                         print(result)
                                         yield result
                                         self.wait()
-                                        mongoClient.insertRecord(db_name="Flipkart-Scrapper",
-                                                                 collection_name=searchString,
-                                                                 record=result)
+                                        # mongoClient.insertRecord(db_name="Flipkart-Scrapper",
+                                        #                          collection_name=searchString,
+                                        #                          record=result)
                                         review_count = review_count + 1
                                 self.openUrl(url=new_url)
                     else:
