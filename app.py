@@ -67,4 +67,4 @@ def index():
 
 
 if __name__ == "__main__":
-    app.run()  # running the app on the local machine on port 8000
+    app.run(port=8000)  # running the app on the local machine on port 8000

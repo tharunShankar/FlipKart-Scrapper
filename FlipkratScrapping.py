@@ -351,10 +351,10 @@ class FlipkratScrapper:
         This function returns boolean value for EMI is available or not.
         """
         try:
-            status = self.checkMoreOffer()
+            # status = self.checkMoreOffer()
             locator = self.getLocatorsObject()
-            if status:
-                self.clickOnMoreOffer()
+            # if status:
+            #     self.clickOnMoreOffer()
             if locator.getViewPlanLinkUsingClass() in self.driver.page_source:
                 return True
             else:
@@ -369,7 +369,8 @@ class FlipkratScrapper:
         try:
             locator = self.getLocatorsObject()
             status = self.checkViewPlanForEMI()
-            if status:
+            # if status:
+            if locator.getViewPlanLinkUsingClass() in self.driver.page_source:
                 emi_detail = self.findElementByXpath(xpath=locator.getEMIDetail()).text
                 return emi_detail
             else:
@@ -601,9 +602,9 @@ class FlipkratScrapper:
                         product_name = self.getProductName()
                         product_searched = self.getProductSearched(search_string=searchString)
                         price = self.getPrice()
-                        offer_details = self.getOfferDetails()
+                        # offer_details = self.getOfferDetails()
                         discount_percent = self.getDiscountedPercent()
-                        EMI = self.getEMIDetails()
+                        # EMI = self.getEMIDetails()
                         total_review_page = self.getTotalReviewPage()
                         count = 0
                         while count <= total_review_page:
@@ -612,28 +613,27 @@ class FlipkratScrapper:
                                 count = count + 1
                                 new_url = self.driver.current_url + "&page=" + str(count + 1)
                                 for i in self.getReviewDetailsForProduct():
-                                    ratings = i[0]
-                                    comment = i[1]
-                                    customer_name = i[2]
-                                    review_age = i[3]
-                                if len(ratings[0]) > 0:
-                                    for i in range(0, len(ratings[0])):
+                                    ratings = i[0][0]
+                                    comment = i[1][0]
+                                    customer_name = i[2][0]
+                                    review_age = i[3][0]
+                                if len(ratings) > 0:
+                                    for i in range(0, len(ratings)):
                                         result = {'product_name': product_name,
                                                   'product_searched': product_searched,
                                                   'price': price,
-                                                  'offer_details': offer_details,
+                                                  # 'offer_details': offer_details,
                                                   'discount_percent': discount_percent,
-                                                  'EMI': EMI,
-                                                  'rating': ratings[0][i],
-                                                  'comment': comment[0][i],
-                                                  'customer_name': customer_name[0][i],
-                                                  'review_age': review_age[0][i]}
+                                                  # 'EMI': EMI,
+                                                  'rating': ratings[i],
+                                                  'comment': comment[i],
+                                                  'customer_name': customer_name[i],
+                                                  'review_age': review_age[i]}
+                                        mongoClient.insertRecord(db_name="Flipkart-Scrapper",
+                                                                 collection_name=searchString,
+                                                                 record=result)
                                         print(result)
                                         yield result
-                                        self.wait()
-                                        # mongoClient.insertRecord(db_name="Flipkart-Scrapper",
-                                        #                          collection_name=searchString,
-                                        #                          record=result)
                                         review_count = review_count + 1
                                 self.openUrl(url=new_url)
                     else:
