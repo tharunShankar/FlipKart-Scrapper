@@ -389,15 +389,12 @@ class FlipkratScrapper:
                 self.findElementByClass(classpath=locator.getMoreReviewUsingClass()[1]).click()
             else:
                 return int(1)
-            if self.waitExplicitlyForCondition(element_to_be_found=locator.getNextFromTotalReviewPage()):
-                total_review_page = [self.findElementByClass(classpath=locator.getTotalReviewPage()).text][0]
-                split_values = total_review_page.split("\n")
-                value = str(split_values[0]).split()[-1]
-                return int(value)
-            else:
-                return 1
+            total_review_page = [self.findElementByClass(classpath=locator.getTotalReviewPage()).text][0]
+            split_values = total_review_page.split("\n")
+            value = str(split_values[0]).split()[-1]
+            return int(value)
         except Exception as e:
-            raise Exception(f"(getTotalReviewPage) - Not able to get the total review page of product.\n" + str(e))
+            return int(1)
 
     def wait(self):
         """
@@ -473,20 +470,15 @@ class FlipkratScrapper:
         This function gets all Review Details for the product
         """
         try:
-            locator = self.getLocatorsObject()
             ratings, comment, customer_name, review_age = [], [], [], []
-            # if locator.getNextFromTotalReviewPage() in self.driver.page_source:
-            #     current_url = self.driver.current_url
-            #     new_url = current_url + "&page=" + str(page_no)
-            comment.append([i.text for i in self.getComments()])
             ratings.append([i.text for i in self.getRatings()])
+            comment.append([i.text for i in self.getComments()])
             cust_name_and_review_age = [i.text for i in self.getCustomerNamesAndReviewAge()]
             customer_name.append(
                 self.separateCustomernameAndReviewAge(list_of_custname_and_reviewage=cust_name_and_review_age)[0])
             review_age.append(
                 self.separateCustomernameAndReviewAge(list_of_custname_and_reviewage=cust_name_and_review_age)[1])
-            # self.openUrl(url=new_url)
-            return ratings, comment, customer_name, review_age
+            yield ratings, comment, customer_name, review_age
         except Exception as e:
             # self.driver.refresh()
             raise Exception(
@@ -625,18 +617,17 @@ class FlipkratScrapper:
                             if review_count <= expected_review:
                                 review_count = review_count + 1
                                 count = count + 1
-                                current_url = self.driver.current_url
-                                new_url = current_url + "&page=" + str(count + 1)
-                                response = self.getReviewDetailsForProduct()
-                                print(response)
-                                ratings = response[0]
-                                print(ratings)
-                                comment = response[1]
-                                print(comment)
-                                customer_name = response[2]
-                                print(customer_name)
-                                review_age = response[3]
-                                print(review_age)
+                                new_url = self.driver.current_url + "&page=" + str(count + 1)
+                                for i in self.getReviewDetailsForProduct():
+                                    print(i)
+                                    ratings = i[0]
+                                    print(ratings)
+                                    comment = i[1]
+                                    print(comment)
+                                    customer_name = i[2]
+                                    print(customer_name)
+                                    review_age = i[3]
+                                    print(review_age)
                                 if len(ratings[0]) > 0:
                                     for i in range(0, len(ratings[0])):
                                         result = {'product_name': product_name,
