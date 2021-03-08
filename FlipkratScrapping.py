@@ -599,19 +599,12 @@ class FlipkratScrapper:
                     self.openUrl(url=link)
                     if locator.getCustomerName() in self.driver.page_source:
                         product_name = self.getProductName()
-                        print(product_name)
                         product_searched = self.getProductSearched(search_string=searchString)
-                        print(product_searched)
                         price = self.getPrice()
-                        print(price)
                         offer_details = self.getOfferDetails()
-                        print(offer_details)
                         discount_percent = self.getDiscountedPercent()
-                        print(discount_percent)
                         EMI = self.getEMIDetails()
-                        print(EMI)
                         total_review_page = self.getTotalReviewPage()
-                        print(total_review_page)
                         count = 0
                         while count <= total_review_page:
                             if review_count <= expected_review:
@@ -619,15 +612,10 @@ class FlipkratScrapper:
                                 count = count + 1
                                 new_url = self.driver.current_url + "&page=" + str(count + 1)
                                 for i in self.getReviewDetailsForProduct():
-                                    print(i)
                                     ratings = i[0]
-                                    print(ratings)
                                     comment = i[1]
-                                    print(comment)
                                     customer_name = i[2]
-                                    print(customer_name)
                                     review_age = i[3]
-                                    print(review_age)
                                 if len(ratings[0]) > 0:
                                     for i in range(0, len(ratings[0])):
                                         result = {'product_name': product_name,
