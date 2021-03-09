@@ -102,4 +102,4 @@ def feedback():
 
 
 if __name__ == "__main__":
-    app.run(port=5000)  # running the app on the local machine on port 8000
+    app.run()  # running the app on the local machine on port 8000
