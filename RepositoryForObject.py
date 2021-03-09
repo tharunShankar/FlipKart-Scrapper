@@ -68,8 +68,9 @@ class ObjectRepository:
         return viewPlan
 
     def getAvailableOffers(self):
-        available_offers = "_3TT44I"
-        return available_offers
+        available_offers1 = "_3TT44I"
+        available_offers2 = "WT_FyS"
+        return available_offers1, available_offers2
 
     def getMoreOffers(self):
         more_offer = "IMZJg1"

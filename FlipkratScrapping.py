@@ -321,7 +321,12 @@ class FlipkratScrapper:
             locator = self.getLocatorsObject()
             if status:
                 self.clickOnMoreOffer()
-            offer_details = self.findElementByClass(classpath=locator.getAvailableOffers()).text
+            if locator.getAvailableOffers()[0] in self.driver.page_source:
+                offer_details = self.findElementByClass(classpath=locator.getAvailableOffers()[0]).text
+            elif locator.getAvailableOffers()[1] in self.driver.page_source:
+                offer_details = self.findElementByClass(classpath=locator.getAvailableOffers()[1]).text
+            else:
+                offer_details = "No Offer For the product"
             return offer_details
         except Exception as e:
             raise Exception(f"(getAvailableOffer) - Not able to get the offer details of product.\n" + str(e))
