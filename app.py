@@ -1,7 +1,5 @@
 # doing necessary imports
-import sys
 import threading
-import time
 
 from flask import Flask, render_template, request, jsonify, Response, url_for, redirect
 from flask_cors import CORS, cross_origin
@@ -41,6 +39,7 @@ class threadClass:
                                                                    password='kavita1610',
                                                                    review_count=self.review_count)
 
+
 @app.route('/', methods=['POST', 'GET'])
 @cross_origin()
 def index():
@@ -61,7 +60,7 @@ def index():
                 reviews = [i for i in response]
                 if len(reviews) > expected_review:
                     result = [reviews[i] for i in range(0, expected_review)]
-                    scrapper_object.saveDataFrameToFile(file_name="scrapper_data.csv", dataframe=pd.DataFrame(result))
+                    scrapper_object.saveDataFrameToFile(file_name="static/scrapper_data.csv", dataframe=pd.DataFrame(result))
                     return render_template('results.html', rows=result)  # show the results to user
                 else:
                     review_count = len(reviews)
@@ -93,7 +92,8 @@ def feedback():
             mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
             rows = mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=collection_name)
             reviews = [i for i in rows]
-            scrapper_object.saveDataFrameToFile(file_name="scrapper_data.csv", dataframe=pd.DataFrame(reviews))
+            dataframe = pd.DataFrame(reviews)
+            scrapper_object.saveDataFrameToFile(file_name="static/scrapper_data.csv", dataframe=dataframe)
             return render_template('results.html', rows=reviews)
         else:
             return render_template('results.html', rows=None)
@@ -102,5 +102,4 @@ def feedback():
 
 
 if __name__ == "__main__":
-    # app.run(port=8000)  # running the app on the local machine on port 8000
-    app.run()
+    app.run()  # running the app on the local machine on port 8000
