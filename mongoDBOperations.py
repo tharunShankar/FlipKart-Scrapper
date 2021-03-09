@@ -206,14 +206,16 @@ class MongoDBManagement:
         except Exception as e:
             raise Exception(f"(insertRecords): Something went wrong on inserting record\n" + str(e))
 
-    def findfirstRecord(self, db_name, collection_name):
+    def findfirstRecord(self, db_name, collection_name,query=None):
         """
         """
         try:
             collection_check_status = self.isCollectionPresent(collection_name=collection_name, db_name=db_name)
+            print(collection_check_status)
             if collection_check_status:
                 collection = self.getCollection(collection_name=collection_name, db_name=db_name)
-                firstRecord = collection.find_one()
+                print(collection)
+                firstRecord = collection.find_one(query)
                 return firstRecord
         except Exception as e:
             raise Exception(f"(findRecord): Failed to find record for the given collection and database\n" + str(e))

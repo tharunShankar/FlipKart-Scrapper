@@ -1,16 +1,15 @@
 # doing necessary imports
+import sys
 import threading
+import time
 
 from flask import Flask, render_template, request, jsonify, Response, url_for, redirect
-import os
 from flask_cors import CORS, cross_origin
-import requests
+import pandas as pd
 from mongoDBOperations import MongoDBManagement
 from FlipkratScrapping import FlipkratScrapper
 from selenium import webdriver
 from webdriver_manager.chrome import ChromeDriverManager
-from RepositoryForObject import ObjectRepository
-import pymongo
 import json
 
 rows = {}
@@ -24,31 +23,23 @@ chrome_options.add_argument('--no-sandbox')
 chrome_options.add_argument("disable-dev-shm-usage")
 
 
-
-#
-# def stream_template(template_name, **context):
-#     app.update_template_context(context)
-#     t = app.jinja_env.get_template(template_name)
-#     rv = t.stream(context)
-#     rv.enable_buffering(5)
-#     return rv
-
 class threadClass:
 
-    def __init__(self,expected_review,searchString,scrapper_object):
+    def __init__(self, expected_review, searchString, scrapper_object, review_count):
         self.expected_review = expected_review
         self.searchString = searchString
         self.scrapper_object = scrapper_object
+        self.review_count = review_count
         thread = threading.Thread(target=self.run, args=())
-        thread.daemon = True                       # Daemonize thread
-        thread.start()                             # Start the execution
+        thread.daemon = True  # Daemonize thread
+        thread.start()  # Start the execution
 
     def run(self):
         global collection_name
         collection_name = self.scrapper_object.getReviewsToDisplay(expected_review=self.expected_review,
-                                            searchString=self.searchString, username='Kavita',
-                                            password='kavita1610')
-        print(collection_name)
+                                                                   searchString=self.searchString, username='Kavita',
+                                                                   password='kavita1610',
+                                                                   review_count=self.review_count)
 
 @app.route('/', methods=['POST', 'GET'])
 @cross_origin()
@@ -57,6 +48,7 @@ def index():
         searchString = request.form['content'].replace(" ", "")  # obtaining the search string entered in the form
         expected_review = int(request.form['expected_review'])
         try:
+            review_count = 0
             scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
                                                chrome_options=chrome_options)
             mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
@@ -68,21 +60,18 @@ def index():
                 response = mongoClient.findAllRecords(db_name=db_name, collection_name=searchString)
                 reviews = [i for i in response]
                 if len(reviews) > expected_review:
-                    return render_template('results.html', rows=reviews)  # show the results to user
+                    result = [reviews[i] for i in range(0, expected_review)]
+                    scrapper_object.saveDataFrameToFile(file_name="scrapper_data.csv", dataframe=pd.DataFrame(result))
+                    return render_template('results.html', rows=result)  # show the results to user
                 else:
-                    threadClass(expected_review=expected_review,searchString=searchString, scrapper_object=scrapper_object)
+                    review_count = len(reviews)
+                    threadClass(expected_review=expected_review, searchString=searchString,
+                                scrapper_object=scrapper_object, review_count=review_count)
 
                     return redirect(url_for('feedback'))
-                    # reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
-                    #                                               searchString=searchString, username='Kavita',
-                    #                                               password='kavita1610')
-                    # return Response(stream_template('results.html', rows=reviews))
             else:
-                threadClass(expected_review=expected_review,searchString=searchString,scrapper_object=scrapper_object)
-                # reviews = scrapper_object.getReviewsToDisplay(expected_review=expected_review,
-                #                                               searchString=searchString, username='Kavita',
-                #                                               password='kavita1610')
-                # return Response(stream_template('results.html', rows=reviews))  # showing the review to the user
+                threadClass(expected_review=expected_review, searchString=searchString, scrapper_object=scrapper_object,
+                            review_count=review_count)
                 return redirect(url_for('feedback'))
 
         except Exception as e:
@@ -91,21 +80,26 @@ def index():
     else:
         return render_template('index.html')
 
-@app.route('/feedback',methods=['GET'])
+
+@app.route('/feedback', methods=['GET'])
 @cross_origin()
 def feedback():
     try:
         global collection_name
         print(collection_name)
         if collection_name is not None:
+            scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
+                                               chrome_options=chrome_options)
             mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
-            rows = mongoClient.findAllRecords(db_name="Flipkart-Scrapper",collection_name=collection_name)
+            rows = mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=collection_name)
             reviews = [i for i in rows]
+            scrapper_object.saveDataFrameToFile(file_name="scrapper_data.csv", dataframe=pd.DataFrame(reviews))
             return render_template('results.html', rows=reviews)
         else:
             return render_template('results.html', rows=None)
     except Exception as e:
-        raise Exception("")
+        raise Exception("(feedback) - Something went wrong on retrieving feedback.\n" + str(e))
+
 
 if __name__ == "__main__":
-    app.run()  # running the app on the local machine on port 8000
+    app.run(port=8000)  # running the app on the local machine on port 8000

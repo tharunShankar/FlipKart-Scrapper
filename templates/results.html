@@ -6,9 +6,18 @@
   <title>Result Page</title>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
-    <meta http-equiv="refresh" content="10"  />
 
+        <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+   <meta http-equiv="refresh" content="10" />
     <link rel="stylesheet" href="./stylme.css">
+
    <link rel="stylesheet" href="css/style.css">
 
 
@@ -16,38 +25,45 @@
 
 <body>
 
-  <div class="table-users">
-   <div class="header">Reviews</div>
 
-   <table cellspacing="0" style="width:100%" >
-      <tr>
-          <th><b>Product-Searched</b></th>
-          <th><b>ProductName</b></th>
-          <th><b>Price</b></th>
-          <th><b>Discount percent</b></th>
-            <th><b>Available Offers</b></th>
-          <th><b>EMI Details</b></th>
-          <th><b>Rating</b></th>
-          <th><b>Customer Name</b></th>
-          <th width="230"><b>Comments</b></th>
-          <th><b>Review Age</b></th>
-      </tr>
-       {% if rows is not none %}
-       {% for review in rows %}
-      <tr>
-          <td>{{review['product_searched']}}</td>
-          <td>{{review['product_name']}}</td>
-          <td>{{review['price']}}</td>
-          <td>{{review['discount_percent']}}</td>
-            <td>{{review['offer_details']}}</td>
-           <td>{{review['EMI']}} </td>
-          <td>{{review['rating']}} </td>
-          <td>{{review['customer_name']}}</td>
-          <td>{{review['comment']}}</td>
-          <td>{{review['review_age']}}</td>
-       {% endfor %}
-       {% endif %}
-   </table>
+  <div class="table-users">
+   <div class="header">
+       <a href="../scrapper_data.csv" download="scrapper_data.csv" /> Download your search result from here after the result display on page.</a>
+   </div>
+      <table class="table table-striped" cellspacing="0" style="width:100%">
+        <thead>
+            <tr>
+                <th scope="col"><b>Product-Searched</b></th>
+                <th scope="col"><b>ProductName</b></th>
+                <th scope="col"><b>Price</b></th>
+                <th scope="col"><b>Discount percent</b></th>
+                <th scope="col"><b>Available Offers</b></th>
+                <th scope="col"><b>EMI Details</b></th>
+                <th scope="col"><b>Rating</b></th>
+                <th scope="col"><b>Customer Name</b></th>
+                <th width="230" scope="col"><b>Comments</b></th>
+                <th scope="col"><b>Review Age</b></th>
+             </tr>
+        </thead>
+        <tbody>
+
+            {% if rows is not none %}
+            {% for review in rows %}
+            <tr>
+                <td>{{review['product_searched']}}</td>
+                <td>{{review['product_name']}}</td>
+                <td>{{review['price']}}</td>
+                <td>{{review['discount_percent']}}</td>
+                <td>{{review['offer_details']}}</td>
+                <td>{{review['EMI']}} </td>
+                <td>{{review['rating']}} </td>
+                <td>{{review['customer_name']}}</td>
+                <td>{{review['comment']}}</td>
+                <td>{{review['review_age']}}</td>
+            {% endfor %}
+            {% endif %}
+        </tbody>
+      </table>
 </div>
 </body>
 </html>

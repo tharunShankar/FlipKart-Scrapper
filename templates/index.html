@@ -3,7 +3,14 @@
 {% block head %}
 
 <title>Search Page</title>
-<link rel="stylesheet" href="css/style.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+     <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 {% endblock %}
 
 {% block body %}
@@ -13,8 +20,8 @@
         between the text and numeric value.<br>For eg. Iphone7 can be written as Iphone-7</h4>
     <div class="form">
         <form action="/" method="POST">
-            <input type="text" name="content" id="content">
-            <input type="text" name="expected_review" id="expected_review">
+            Enter product to be searched: <input type="text" name="content" id="content" ><br><br>
+            Enter the expected review count you need: <input type="text" name="expected_review" id="expected_review"><br><br>
             <input type="submit" value="Search">
         </form>
     </div>
