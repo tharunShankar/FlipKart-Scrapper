@@ -27,8 +27,8 @@ pytz==2021.1
 redis==3.5.3
 requests==2.24.0
 rq==1.7.0
-selenium @ file:///C:/ci/selenium_1614268120390/work
-six @ file:///C:/ci/six_1605205404068/work
+selenium
+six
 soupsieve==2.0.1
 urllib3==1.25.11
 webdriver-manager==3.3.0
