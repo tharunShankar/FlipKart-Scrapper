@@ -68,7 +68,7 @@ def index():
             review_count = 0
             scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
                                                chrome_options=chrome_options)
-            mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
+            mongoClient = MongoDBManagement(username='Tharun', password='1234')
             scrapper_object.openUrl("https://www.flipkart.com/")
             logger.info("Url hitted")
             scrapper_object.login_popup_handle()
@@ -110,7 +110,7 @@ def feedback():
         if collection_name is not None:
             scrapper_object = FlipkratScrapper(executable_path=ChromeDriverManager().install(),
                                                chrome_options=chrome_options)
-            mongoClient = MongoDBManagement(username='Kavita', password='kavita1610')
+            mongoClient = MongoDBManagement(username='Tharun', password='1234)
             rows = mongoClient.findAllRecords(db_name="Flipkart-Scrapper", collection_name=collection_name)
             reviews = [i for i in rows]
             dataframe = pd.DataFrame(reviews)
